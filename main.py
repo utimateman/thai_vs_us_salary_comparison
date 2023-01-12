@@ -15,6 +15,15 @@ def calculateUSTax(annual_salary):
             return taxed_annual_salary
 
 
+def calculateThaiTax(annual_salary):
+    thai_marginal_tax_interval = [(0,150000),(150001,300000),(300001,500000),(500001,750000),(750001,1000000),(1000001,2000000),(2000001,5000000),(5000001, math.inf)]
+    thai_marginal_tax_dict = {0:0, 1:0.05, 2:0.1, 3:0.15, 4:0.2, 5:0.25, 6:0.30, 7:0.35}
+
+    for i in range(len(thai_marginal_tax_interval)): 
+        if thai_marginal_tax_interval[i][0] <= annual_salary and annual_salary <= thai_marginal_tax_interval[i][1]:
+            taxed_annual_salary = annual_salary * (1 - thai_marginal_tax_dict[i])
+            return taxed_annual_salary 
+
 def calculateMonthlySavings(taxed_monthly_salary, monthly_living_cost):
     montly_savings = taxed_monthly_salary - monthly_living_cost
     return montly_savings
@@ -52,11 +61,12 @@ with us_tab:
 
 with thai_tab:
    st.markdown("#### Thailand Salary")
-   thai_annual_salary = st.number_input(label="Monthly Salary (THB): ")
+   thai_monthly_salary = st.number_input(label="Monthly Salary (THB): ")
    st.markdown("")
    thai_monthly_living_cost = st.number_input(label="Monthly Living Cost (THB): ")
 
-   thai_monthly_savings  = calculateMonthlySavings(thai_annual_salary, thai_monthly_living_cost)
+   taxed_thai_monthly_salary = calculateThaiTax(thai_monthly_salary*12)
+   thai_monthly_savings  = calculateMonthlySavings(taxed_thai_monthly_salary/12, thai_monthly_living_cost)
    thai_monthly_savings_list = [thai_monthly_savings] * 12
 
    thai_monthly_cumlative_savings = calculateCumulativeSavings(thai_monthly_savings_list)
